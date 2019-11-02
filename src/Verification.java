@@ -30,6 +30,11 @@ public class Verification {
         if(fibMethod.fibonacci(70).toString().compareTo("190392490709135") != 0)
             correct = false;
 
+        /*for(long i = 900; i < 1100; i++)
+        {
+            System.out.println(i + ": Formula " + fibMethod.fibonacci(i) + " compare: " + fibMatrixBig.fibonacci(i));
+            System.out.println("Difference of " + fibMethod.fibonacci(i).subtract(fibMatrixBig.fibonacci(i)));
+        }*/
         //Checking random large x against the fibLoopBig version
         int minvalue = 60;
         int maxvalue = 300;
