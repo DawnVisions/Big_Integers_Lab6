@@ -1,9 +1,10 @@
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class BigIntegerTesting {
     public static void main(String[] args) {
-        MyBigIntegers a = new MyBigIntegers("423");
-        MyBigIntegers b = new MyBigIntegers("1118");
-        System.out.println("a+b = " + a.Plus(b).toString());
+
+        System.out.println(MyBigIntegers.TimesFaster("5678","1234"));
+
     }
 }
