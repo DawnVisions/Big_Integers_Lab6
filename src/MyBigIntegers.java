@@ -145,7 +145,7 @@ public class MyBigIntegers {
    private static MyBigIntegers Karatsuba(MyBigIntegers ab, MyBigIntegers cd) {
         //System.out.println("Testing "+ ab.value + " times " + cd.value);
         //Base case
-        if(ab.value.length() == 1 || cd.value.length() == 1)
+        if(ab.value.length() < 20 || cd.value.length() < 20)
         {
 
             return ab.Times(cd);
@@ -176,8 +176,8 @@ public class MyBigIntegers {
         //Left shift for z1 and z2
         for(int i = 0; i< mid; i++)
         {
-            z1 = new MyBigIntegers(z1.ToString().concat("0"));
-            z2 = new MyBigIntegers(z2.ToString().concat("00"));
+            z1.value = z1.value.concat("0");
+            z2.value = z2.value.concat("00");
         }
 
         //Answer = z0 + z1 + z2
