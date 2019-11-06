@@ -1,8 +1,3 @@
-import javax.swing.*;
-import java.net.Inet4Address;
-import java.sql.Time;
-import java.util.ArrayList;
-
 public class MyBigIntegers {
     String value;
     boolean isPositive;
@@ -23,8 +18,9 @@ public class MyBigIntegers {
         //(-a) + b
         if(!this.isPositive && number.isPositive)
         {
-            this.isPositive = true;
-            return number.Minus(this);
+            MyBigIntegers c = new MyBigIntegers(this.value);
+            c.isPositive = true;
+            return number.Minus(c);
         }
 
         //Ensures a is longer than b
@@ -51,8 +47,12 @@ public class MyBigIntegers {
             //Else if we ran out of numbers to add in b
             else
             {
-                answer.insert(0, a.charAt(a.length()-i)-'0'+carry);
-                carry = 0;
+                int digit = a.charAt(a.length()-i)-'0'+carry;
+                answer.insert(0, digit % 10 );
+                if (digit > 9)
+                    carry = 1;
+                else
+                    carry = 0;
             }
         }
         //Adds leading 1 if there is still a carry
@@ -131,8 +131,19 @@ public class MyBigIntegers {
         return result;
     }
 
-   public static MyBigIntegers TimesFaster(MyBigIntegers ab, MyBigIntegers cd) {
-        System.out.println("Testing "+ ab.value + " times " + cd.value);
+    public MyBigIntegers TimesFaster(MyBigIntegers number)
+    {
+        MyBigIntegers result = Karatsuba(this, number);
+        //Make the answer negative if a xor b is negative
+        if(this.isPositive ^ number.isPositive)
+        {
+            result.isPositive = false;
+        }
+        return result;
+    }
+
+   private static MyBigIntegers Karatsuba(MyBigIntegers ab, MyBigIntegers cd) {
+        //System.out.println("Testing "+ ab.value + " times " + cd.value);
         //Base case
         if(ab.value.length() == 1 || cd.value.length() == 1)
         {
@@ -151,16 +162,16 @@ public class MyBigIntegers {
         MyBigIntegers d = new MyBigIntegers(cd.value.substring(cd.value.length()-mid));
 
         //   b * d
-        MyBigIntegers z0 = TimesFaster(b,d);
+        MyBigIntegers z0 = Karatsuba(b,d);
         //  (a+b) * (c+d)
-        MyBigIntegers z1 = TimesFaster(a.Plus(b), c.Plus(d));
+        MyBigIntegers z1 = Karatsuba(a.Plus(b), c.Plus(d));
         //  c * d
-        MyBigIntegers z2 = TimesFaster(a, c);
+        MyBigIntegers z2 = Karatsuba(a, c);
 
         // z1 - z0 - z2
         z1 = z1.Minus(z0).Minus(z2);
 
-        System.out.println("Before shift: z1 " + z1.ToString() + "  z2 " + z2.ToString());
+        //System.out.println("Before shift: z1 " + z1.ToString() + "  z2 " + z2.ToString());
 
         //Left shift for z1 and z2
         for(int i = 0; i< mid; i++)
@@ -172,8 +183,8 @@ public class MyBigIntegers {
         //Answer = z0 + z1 + z2
         MyBigIntegers result = z0.Plus(z1).Plus(z2);
 
-        System.out.println("z0 is " + z0.ToString() + "  z1 is " + z1.ToString() + "  z2 is " + z2.ToString());
-        System.out.println("Returning " + result.ToString());
+        //System.out.println("z0 is " + z0.ToString() + "  z1 is " + z1.ToString() + "  z2 is " + z2.ToString());
+        //System.out.println("Returning " + result.ToString());
         return result;
     }
 
@@ -187,20 +198,23 @@ public class MyBigIntegers {
 
         // a - (-b)  =  a + b
         if(this.isPositive && !number.isPositive) {
-            number.isPositive = true;
-            return this.Plus(number);
+            MyBigIntegers c = new MyBigIntegers(number.value);
+            c.isPositive = true;
+            return this.Plus(c);
         }
 
         //-a - b   =  -(a + b)
         if(!this.isPositive && number.isPositive) {
-            number.isPositive = false;
-            return this.Plus(number);
+            MyBigIntegers c = new MyBigIntegers(number.value);
+            c.isPositive = false;
+            return this.Plus(c);
         }
 
         // -a - (-b)   =  (-a) + b
         if(!this.isPositive && !number.isPositive) {
-            number.isPositive = true;
-            return this.Plus(number);
+            MyBigIntegers c = new MyBigIntegers(number.value);
+            c.isPositive = true;
+            return this.Plus(c);
         }
 
         // Check to see if a is smaller than b
