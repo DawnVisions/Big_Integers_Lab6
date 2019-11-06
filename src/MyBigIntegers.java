@@ -7,7 +7,7 @@ public class MyBigIntegers {
     String value;
     boolean isPositive;
 
-    public String Plus(MyBigIntegers number)
+    public MyBigIntegers Plus(MyBigIntegers number)
     {
         String a = this.value;
         String b = number.value;
@@ -61,23 +61,24 @@ public class MyBigIntegers {
             answer.insert(0, "1");
         }
 
+        MyBigIntegers result = new MyBigIntegers(answer.toString());
         //Add negative sign to the answer if both numbers are negative
         if(!this.isPositive && !number.isPositive)
         {
-            answer.insert(0, '-');
+            result.isPositive = false;
         }
-        return answer.toString();
+        return result;
     }
 
-    public String Times(MyBigIntegers number) {
+    public MyBigIntegers Times(MyBigIntegers number) {
         String a = this.value;
         String b = number.value;
 
         //a or b is empty
         if(a.isEmpty() || b.isEmpty())
-            return "0";
+            return new MyBigIntegers("0");
         if(a.charAt(0) == '0' || b.charAt(0) == '0')
-            return "0";
+            return new MyBigIntegers("0");
 
         //array of digits in reverse order
         int[] digit = new int[a.length()+b.length()];
@@ -121,48 +122,62 @@ public class MyBigIntegers {
                 answer.append(digit[k]);
         }
 
+        MyBigIntegers result = new MyBigIntegers(answer.toString());
         //Make the answer negative if a xor b is negative
         if(this.isPositive ^ number.isPositive)
         {
-            answer.insert(0, '-');
+            result.isPositive = false;
         }
-        return answer.toString();
+        return result;
     }
 
-   public static String TimesFaster(String ab, String cd) {
-        System.out.println("Testing "+ ab + " times " + cd);
+   public static MyBigIntegers TimesFaster(MyBigIntegers ab, MyBigIntegers cd) {
+        System.out.println("Testing "+ ab.value + " times " + cd.value);
         //Base case
-        if(ab.length() == 1 || cd.length() == 1)
+        if(ab.value.length() == 1 || cd.value.length() == 1)
         {
-            int answer = Integer.parseInt(ab)*Integer.parseInt(cd);
-            return Integer.toString(answer);
+
+            return ab.Times(cd);
         }
 
         //Find the middle of the smaller string
-        int mid = Integer.min(ab.length(), cd.length());
+        int mid = Integer.min(ab.value.length(), cd.value.length());
         mid = Math.floorDiv(mid,2);
 
         //Split strings in the middle
-        MyBigIntegers a = new MyBigIntegers(ab.substring(0,mid));
-        MyBigIntegers b = new MyBigIntegers(ab.substring(mid));
-        MyBigIntegers c = new MyBigIntegers(cd.substring(0, mid));
-        MyBigIntegers d = new MyBigIntegers(cd.substring(mid));
+        MyBigIntegers a = new MyBigIntegers(ab.value.substring(0,ab.value.length()-mid));
+        MyBigIntegers b = new MyBigIntegers(ab.value.substring(ab.value.length()-mid));
+        MyBigIntegers c = new MyBigIntegers(cd.value.substring(0, cd.value.length()-mid));
+        MyBigIntegers d = new MyBigIntegers(cd.value.substring(cd.value.length()-mid));
 
-        String z0 = TimesFaster(b.ToString(),d.ToString());
-        String z1 = TimesFaster(a.Plus(b), c.Plus(d));
-        String z2 = TimesFaster(a.ToString(), c.ToString());
+        //   b * d
+        MyBigIntegers z0 = TimesFaster(b,d);
+        //  (a+b) * (c+d)
+        MyBigIntegers z1 = TimesFaster(a.Plus(b), c.Plus(d));
+        //  c * d
+        MyBigIntegers z2 = TimesFaster(a, c);
 
-        long zero = Long.parseLong(z0);
-        long one = Long.parseLong(z1);
-        long two = Long.parseLong(z2);
-        System.out.println("z0 is " + zero + "  z1 is " + one + "  z2 is " + two);
-        long result = two*(long)Math.pow(10, mid*2)+(one-two-zero)*(long)Math.pow(10,mid)+zero;
+        // z1 - z0 - z2
+        z1 = z1.Minus(z0).Minus(z2);
 
-        System.out.println("Returning " + result);
-        return Long.toString(result);
+        System.out.println("Before shift: z1 " + z1.ToString() + "  z2 " + z2.ToString());
+
+        //Left shift for z1 and z2
+        for(int i = 0; i< mid; i++)
+        {
+            z1 = new MyBigIntegers(z1.ToString().concat("0"));
+            z2 = new MyBigIntegers(z2.ToString().concat("00"));
+        }
+
+        //Answer = z0 + z1 + z2
+        MyBigIntegers result = z0.Plus(z1).Plus(z2);
+
+        System.out.println("z0 is " + z0.ToString() + "  z1 is " + z1.ToString() + "  z2 is " + z2.ToString());
+        System.out.println("Returning " + result.ToString());
+        return result;
     }
 
-    public String Minus(MyBigIntegers number) {
+    public MyBigIntegers Minus(MyBigIntegers number) {
 
         String a = this.value;
         String b = number.value;
@@ -228,10 +243,12 @@ public class MyBigIntegers {
                 answer.insert(0, digit);
             carry = 0;
         }
-        if(negativeAnswer)
-            answer.insert(0, '-');
 
-        return answer.toString();
+        MyBigIntegers result = new MyBigIntegers(answer.toString());
+        if(negativeAnswer)
+            result.isPositive = false;
+
+        return result;
     }
 
     //Helper function for Minus

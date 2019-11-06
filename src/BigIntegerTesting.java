@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class BigIntegerTesting {
     public static void main(String[] args) {
 
-        System.out.println(MyBigIntegers.TimesFaster("5678","1234"));
+        System.out.println(MyBigIntegers.TimesFaster(new MyBigIntegers("999"),new MyBigIntegers("100")).ToString());
 
     }
 }
